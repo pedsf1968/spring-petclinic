@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.samples.petclinic.common.CommonAttribute;
 import org.springframework.samples.petclinic.dto.OwnerDTO;
@@ -30,7 +31,8 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
-@DataJpaTest(includeFilters = @ComponentScan.Filter(Service.class))
+//@DataJpaTest(includeFilters = @ComponentScan.Filter(Service.class))
+@SpringBootTest
 class OwnerServiceTest {
 
 	private final static Integer OWNER_ID = 11;

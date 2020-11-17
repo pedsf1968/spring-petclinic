@@ -24,6 +24,7 @@ import java.util.Collection;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.samples.petclinic.model.business.Owner;
 import org.springframework.samples.petclinic.repository.OwnerRepository;
@@ -66,7 +67,8 @@ import org.springframework.transaction.annotation.Transactional;
  * @author Michael Isvy
  * @author Dave Syer
  */
-@DataJpaTest(includeFilters = @ComponentScan.Filter(Service.class))
+//@DataJpaTest(includeFilters = @ComponentScan.Filter(Service.class))
+@SpringBootTest
 class ClinicServiceTest {
 
 	@Autowired
