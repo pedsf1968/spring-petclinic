@@ -50,8 +50,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Bean
 	public OAuth2AuthorizedClientService authorizedClientService() {
-
-		return new InMemoryOAuth2AuthorizedClientService(clientRegistrationRepository());
+		ClientRegistrationRepository clientRegistrationRepository = clientRegistrationRepository();
+		if (clientRegistrationRepository != null) {
+			return new InMemoryOAuth2AuthorizedClientService(clientRegistrationRepository);
+		}
+		else {
+			return null;
+		}
 	}
 
 	@Override
@@ -101,7 +106,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		List<ClientRegistration> registrations = clients.stream().map(c -> getRegistration(c))
 				.filter(registration -> registration != null).collect(Collectors.toList());
 
-		return new InMemoryClientRegistrationRepository(registrations);
+		if (registrations != null) {
+			return new InMemoryClientRegistrationRepository(registrations);
+		}
+		else {
+			return null;
+		}
 	}
 
 	private ClientRegistration getRegistration(String client) {

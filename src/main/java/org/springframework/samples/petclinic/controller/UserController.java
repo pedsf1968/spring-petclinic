@@ -152,7 +152,7 @@ public class UserController extends WebSocketSender {
 
 		model.addAttribute(CommonAttribute.USER, user);
 		String message = String.format(CommonWebSocket.USER_LOGGED_IN, user.getFirstName(), user.getLastName());
-		sendSuccessMessage(message );
+		sendSuccessMessage(message);
 
 		return CommonView.HOME;
 	}
@@ -160,13 +160,14 @@ public class UserController extends WebSocketSender {
 	@GetMapping(CommonEndPoint.OAUTH2_SUCCESS)
 	public String postLogin(Model model, OAuth2AuthenticationToken authentication) {
 
-		OAuth2AuthorizedClient client = authorizedClientService	.loadAuthorizedClient(authentication.getAuthorizedClientRegistrationId(), authentication.getName());
+		OAuth2AuthorizedClient client = authorizedClientService
+				.loadAuthorizedClient(authentication.getAuthorizedClientRegistrationId(), authentication.getName());
 
 		String userInfoEndpointUri = client.getClientRegistration().getProviderDetails().getUserInfoEndpoint().getUri();
 
 		UserDTO user = userService.findByEmail(authentication.getName());
 
-		if( user!=null) {
+		if (user != null) {
 			model.addAttribute(CommonAttribute.USER, user);
 
 			String message = String.format(CommonWebSocket.USER_LOGGED_IN, user.getFirstName(), user.getLastName());
