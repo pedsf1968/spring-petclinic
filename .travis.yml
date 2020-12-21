@@ -1,23 +1,27 @@
 language: java
-sudo: true
+os: linux
 dist: trusty
 
-# use Java 9
-jdk: oraclejdk9
+# use Java 11
+jdk: oraclejdk11
 
 before_install:
   - chmod +x mvnw
 
 jobs:
   include:
+    - stage: javaformat
+      script: ./mvnw spring-javaformat:apply
     - stage: test
       script: ./mvnw clean test
     - stage: verify
       script: ./mvnw verify
+    - stage: sonar
+      script: ./mvnw verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
 
 cache:
   directories:
     - $HOME/.m2
 
 notifications:
-#  email: email@provider.com
+  email: pedsf.fullstack@gmail.com

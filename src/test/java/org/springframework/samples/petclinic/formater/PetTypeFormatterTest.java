@@ -28,10 +28,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.samples.petclinic.dto.PetTypeDTO;
+import org.springframework.samples.petclinic.dto.business.PetTypeDTO;
 import org.springframework.samples.petclinic.formatter.PetTypeFormatter;
 import org.springframework.samples.petclinic.model.business.PetType;
-import org.springframework.samples.petclinic.service.PetService;
+import org.springframework.samples.petclinic.service.business.PetService;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;

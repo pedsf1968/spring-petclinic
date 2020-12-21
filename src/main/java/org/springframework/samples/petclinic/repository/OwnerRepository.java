@@ -54,7 +54,7 @@ public interface OwnerRepository extends Repository<Owner, Integer> {
 	 * @param id the id to search for
 	 * @return the {@link Owner} if found
 	 */
-	@Query("SELECT owner FROM Owner owner left join fetch owner.pets WHERE owner.id =:id")
+	@Query("SELECT DISTINCT owner FROM Owner owner left join fetch owner.pets WHERE owner.id =:id")
 	@Transactional(readOnly = true)
 	Owner findById(@Param("id") Integer id);
 
@@ -62,12 +62,22 @@ public interface OwnerRepository extends Repository<Owner, Integer> {
 	 * Retrieve all {@link Owner}s from the data store
 	 * @return a Collection of {@link Owner}s (or an empty Collection if none
 	 */
+	@Query("SELECT DISTINCT owner FROM Owner owner left join fetch owner.pets")
+	@Transactional(readOnly = true)
 	List<Owner> findAll();
 
 	/**
 	 * Save an {@link Owner} to the data store, either inserting or updating it.
 	 * @param owner the {@link Owner} to save
+	 * @return the {@link Owner} saved or updated
 	 */
 	Owner save(Owner owner);
+
+	/**
+	 * Delete an {@link Owner} from the data store.
+	 * @param owner the {@link Owner} to delete
+	 * @return the {@link Owner} deleted
+	 */
+	Owner delete(Owner owner);
 
 }

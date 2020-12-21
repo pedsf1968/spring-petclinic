@@ -1,15 +1,17 @@
 package org.springframework.samples.petclinic.model.common;
 
-import org.springframework.beans.support.MutableSortDefinition;
-import org.springframework.beans.support.PropertyComparator;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.samples.petclinic.common.CommonError;
 import org.springframework.samples.petclinic.common.CommonParameter;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
-import javax.xml.bind.annotation.XmlElement;
 import java.io.Serializable;
 import java.util.*;
 
@@ -18,9 +20,11 @@ import java.util.*;
  *
  * @author Paul-Emmanuel DOS SANTOS FACAO
  */
+@Getter
+@Setter
 @Entity(name = "User")
 @Table(name = "users")
-public class User extends Person implements Serializable {
+public class User extends Person implements Serializable, UserDetails {
 
 	@NotNull
 	@Size(min = CommonParameter.EMAIL_MIN, max = CommonParameter.EMAIL_MAX, message = CommonError.FORMAT_BETWEEN
@@ -29,34 +33,37 @@ public class User extends Person implements Serializable {
 	@Column(name = "email", unique = true, length = CommonParameter.EMAIL_MAX)
 	private String email;
 
-	@NotNull
-	@Column(name = "email_verified")
-	private Boolean emailVerified = false;
-
-	@NotNull
 	@Size(min = CommonParameter.PASSWORD_MIN, max = CommonParameter.PASSWORD_MAX, message = CommonError.FORMAT_BETWEEN
 			+ CommonParameter.PASSWORD_MIN + " AND " + CommonParameter.PASSWORD_MAX + " !")
 	@Column(name = "password", length = CommonParameter.PASSWORD_MAX)
 	private String password;
 
 	@NotNull
-	@Enumerated(EnumType.STRING)
-	private AuthProvider provider;
+	@Column(name = "enabled")
+	private boolean enabled;
 
-	@Column(name = "provider_id")
-	private String providerId;
+	@NotNull
+	@Column(name = "account_unexpired")
+	private boolean accountNonExpired;
+
+	@NotNull
+	@Column(name = "account_unlocked")
+	private boolean accountNonLocked;
+
+	@NotNull
+	@Column(name = "credential_unexpired")
+	private boolean credentialsNonExpired;
+
+	@ManyToMany(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
+	@JoinTable(name = "users_roles", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
+			inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
+	private Collection<Role> roles;
 
 	@Size(max = CommonParameter.PHONE_MAX, message = CommonError.FORMAT_LESS + CommonParameter.PHONE_MAX)
-	@Pattern(regexp = CommonParameter.PHONE_REGEXP, message = CommonError.PHONE_FORMAT)
+	// @Pattern(regexp = CommonParameter.PHONE_REGEXP, message = CommonError.PHONE_FORMAT)
 	@Column(name = "telephone", length = CommonParameter.EMAIL_MAX)
 	private String telephone;
 
-	@ManyToMany(fetch = FetchType.EAGER)
-	@JoinTable(name = "users_roles", joinColumns = @JoinColumn(name = "user_id"),
-			inverseJoinColumns = @JoinColumn(name = "role_id"))
-	private Set<Role> roles;
-
-	@NotNull
 	@Size(max = CommonParameter.STREET_MAX, message = CommonError.FORMAT_LESS + CommonParameter.STREET_MAX + " !")
 	@Column(name = "street1", length = CommonParameter.STREET_MAX)
 	private String street1;
@@ -69,12 +76,10 @@ public class User extends Person implements Serializable {
 	@Column(name = "street3", length = CommonParameter.STREET_MAX)
 	private String street3;
 
-	@NotNull
 	@Size(max = CommonParameter.ZIP_MAX, message = CommonError.FORMAT_LESS + CommonParameter.ZIP_MAX + " !")
 	@Column(name = "zip_code", length = CommonParameter.ZIP_MAX)
 	private String zipCode;
 
-	@NotNull
 	@Size(max = CommonParameter.CITY_MAX, message = CommonError.FORMAT_LESS + CommonParameter.CITY_MAX + " !")
 	@Column(name = "city", length = CommonParameter.CITY_MAX)
 	private String city;
@@ -83,126 +88,84 @@ public class User extends Person implements Serializable {
 	@Column(name = "country", length = CommonParameter.COUNTRY_MAX)
 	private String country;
 
-	public String getEmail() {
+	@Override
+	public String getUsername() {
 		return email;
 	}
 
-	public void setEmail(String email) {
-		this.email = email;
+	@Override
+	public boolean isEnabled() {
+		return enabled;
 	}
 
-	public Boolean getEmailVerified() {
-		return emailVerified;
+	@Override
+	public boolean isAccountNonExpired() {
+		return accountNonExpired;
 	}
 
-	public void setEmailVerified(Boolean emailVerified) {
-		this.emailVerified = emailVerified;
+	@Override
+	public boolean isAccountNonLocked() {
+		return accountNonLocked;
 	}
 
-	public String getPassword() {
-		return password;
+	@Override
+	public boolean isCredentialsNonExpired() {
+		return credentialsNonExpired;
 	}
 
-	public void setPassword(String password) {
-		this.password = password;
-	}
-
-	public AuthProvider getProvider() {
-		return provider;
-	}
-
-	public void setProvider(AuthProvider provider) {
-		this.provider = provider;
-	}
-
-	public String getProviderId() {
-		return providerId;
-	}
-
-	public void setProviderId(String providerId) {
-		this.providerId = providerId;
-	}
-
-	public String getTelephone() {
-		return telephone;
-	}
-
-	public void setTelephone(String telephone) {
-		this.telephone = telephone;
-	}
-
-	protected Set<Role> getRolesInternal() {
+	protected Collection<Role> getRolesInternal() {
 		if (this.roles == null) {
 			this.roles = new HashSet<>();
 		}
+
 		return this.roles;
 	}
 
-	protected void setRolesInternal(Set<Role> roles) {
-		this.roles = roles;
-	}
-
-	@XmlElement
-	public List<Role> getRoles() {
-		List<Role> sortedRoles = new ArrayList<>(getRolesInternal());
-		PropertyComparator.sort(sortedRoles, new MutableSortDefinition("name", true, true));
-		return Collections.unmodifiableList(sortedRoles);
-	}
-
-	public int getNrOfRoles() {
-		return getRolesInternal().size();
+	public Collection<Role> getRoles() {
+		return getRolesInternal();
 	}
 
 	public void addRole(Role role) {
-		getRolesInternal().add(role);
+		if (this.getRoles() == null || !this.getRoles().contains(role)) {
+			getRolesInternal().add(role);
+		}
+		if (!role.getUsers().contains(this)) {
+			role.addUser(this);
+		}
 	}
 
-	public String getStreet1() {
-		return street1;
+	public void removeRole(Role role) {
+		if (this.roles != null) {
+			this.roles.remove(role);
+			role.getUsers().remove(this);
+		}
 	}
 
-	public void setStreet1(String street1) {
-		this.street1 = street1;
+	private List<GrantedAuthority> getGrantedAuthorities(List<String> privileges) {
+		List<GrantedAuthority> authorities = new ArrayList<>();
+		for (String privilege : privileges) {
+			authorities.add(new SimpleGrantedAuthority(privilege));
+		}
+		return authorities;
 	}
 
-	public String getStreet2() {
-		return street2;
+	private List<String> getPrivileges(Collection<Role> roles) {
+
+		List<String> privileges = new ArrayList<>();
+		List<Privilege> collection = new ArrayList<>();
+		for (Role role : roles) {
+			collection.addAll(role.getPrivileges());
+		}
+		for (Privilege item : collection) {
+			privileges.add(item.getName());
+		}
+		return privileges;
 	}
 
-	public void setStreet2(String street2) {
-		this.street2 = street2;
-	}
+	@Override
+	public Collection<? extends GrantedAuthority> getAuthorities() {
 
-	public String getStreet3() {
-		return street3;
-	}
-
-	public void setStreet3(String street3) {
-		this.street3 = street3;
-	}
-
-	public String getZipCode() {
-		return zipCode;
-	}
-
-	public void setZipCode(String zipCode) {
-		this.zipCode = zipCode;
-	}
-
-	public String getCity() {
-		return city;
-	}
-
-	public void setCity(String city) {
-		this.city = city;
-	}
-
-	public String getCountry() {
-		return country;
-	}
-
-	public void setCountry(String country) {
-		this.country = country;
+		return getGrantedAuthorities(getPrivileges(this.roles));
 	}
 
 }

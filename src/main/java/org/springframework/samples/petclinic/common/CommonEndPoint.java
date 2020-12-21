@@ -7,6 +7,8 @@ package org.springframework.samples.petclinic.common;
  */
 public final class CommonEndPoint {
 
+	public static final String PETCLINIC_CONFIRM_ACCOUNT = "http://localhost:8080/confirm-account?token=";
+
 	public static final String OWNERS = "/owners";
 
 	public static final String OWNERS_FIND = "/owners/find";
@@ -25,7 +27,9 @@ public final class CommonEndPoint {
 
 	public static final String USERS_EDIT = "/users/edit";
 
-	public static final String USERS_ID_EDIT = "/users/{ownerId}/edit";
+	public static final String USERS_ID_EDIT = "/users/{userId}/edit";
+
+	public static final String USERS_ID_EDIT_PASSWORD = "/users/{userId}/edit/password";
 
 	public static final String USERS_NEW = "/users/new";
 
@@ -33,7 +37,11 @@ public final class CommonEndPoint {
 
 	public static final String LOGIN_SUCCESS = "/login/success";
 
+	public static final String OAUTH2_AUTHORIZATION = "oauth2/authorization/";
+
 	public static final String OAUTH2_SUCCESS = "/oauth2/success";
+
+	public static final String CONFIRM_ACCOUNT = "/confirm-account";
 
 	public static final String LOGOUT = "/logout";
 

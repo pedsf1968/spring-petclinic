@@ -2,9 +2,15 @@ package org.springframework.samples.petclinic.common;
 
 public class CommonParameter {
 
+	public static final boolean ASK_OAUTH2_CONFIRMATION = false;
+
+	public static final String PETCLINIC_ADMIN_MAIL = "admin@petclinic.com";
+
 	public static final int CITY_MAX = 50;
 
 	public static final int COUNTRY_MAX = 50;
+
+	public static final String DEFAULT_PROVIDER = "local";
 
 	public static final int EMAIL_MAX = 255;
 
@@ -28,11 +34,15 @@ public class CommonParameter {
 
 	public static final String PHONE_REGEXP = "^(?:(?:\\+|00)33[\\s.-]{0,3}(?:\\(0\\)[\\s.-]{0,3})?|0)[1-9](?:(?:[\\s.-]?\\d{2}){4}|\\d{2}(?:[\\s.-]?\\d{3}){2}|)$";
 
+	public static final int PRIVILEGE_MAX = 20;
+
 	public static final int STATUS_MAX = 10;
 
 	public static final int STREET_MAX = 50;
 
-	public static final int ROLE_MAX = 10;
+	public static final int TOKEN_EXPIRATION = 60 * 24;
+
+	public static final int ROLE_MAX = 20;
 
 	public static final int ZIP_MAX = 6;
 
